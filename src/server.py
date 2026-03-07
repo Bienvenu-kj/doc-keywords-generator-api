@@ -1,7 +1,17 @@
 from fastapi import FastAPI, UploadFile
+from fastapi.cors import CORSMiddleware
+
 from src.models.pydanc import KeywordsApiResponse, KeywordApiResponse
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/")
 def root():
