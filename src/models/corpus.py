@@ -1,5 +1,6 @@
 from pathlib import Path
 from src.utils.readers import reader
+
 documentsPath = Path("src/assets");
 
 
