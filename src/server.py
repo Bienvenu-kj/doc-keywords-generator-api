@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from src.models.pydanc import KeywordsApiResponse, KeywordApiResponse
+from src.models.pydantic.model import KeywordsApiResponse, KeywordApiResponse
 
 app = FastAPI()
 
