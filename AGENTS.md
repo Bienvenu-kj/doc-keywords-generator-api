@@ -11,14 +11,18 @@
 
 ## Dépendances Préférées
 - Extraction PDF et TXT : `PyMuPDF`.
-- NLP : `spaCy` ou `nltk` (à confirmer selon les besoins).
+- NLP : `spaCy` ou `nltk` (nous confirmerons après).
 - serveur Web : FastAPI
+
+## commandes 
+- Dev : `fastapi dev ./src/server.py`
+- Prod : `uvicorn src.server:app --host 0.0.0.0 --port $PORT` || `fastapi run ./src/server.py`
 
 ## Méthodes pour la génération de Keywords
 Nous nous basons sur le modèle TF-IDF pour générer les mots clés, on peut toujours signaler son alternative.
 
 ## Façon de répondre  (Save_memory)
-Soit toujours claire dans les explications, et vraiment technique, proposant et non imposant
+Soit toujours claire dans les explications, et vraiment plus technique, proposant et non imposant
 
 ## Workflows Spécifiques
 - On se concentre d'abord sur Le Domaine, les implementations (infrastructures) on va voir après.
