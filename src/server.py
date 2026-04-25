@@ -1,28 +1,39 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from src.types.pydantic.model import KeywordsApiResponse, KeywordApiResponse
+from Domain.models.response import KeywordsApiResponse
+from Domain.models.keyword import Keyword
+from Domain.models.term import Term
 
 app = FastAPI()
 
 app.add_middleware(
-    CORSMiddleware,
+    CORSMiddleware, #type: ignore
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
 
+
 @app.get("/")
 def root():
     return "Salut"
 
+
 @app.post("/keywords")
-def keywordsGenerating(file: UploadFile):
+def keywords_generating(file: UploadFile) -> KeywordsApiResponse:
+
     # Exemple de réponse avec des mots-clés fictifs
-    sample_keywords = [
-        KeywordApiResponse(term="intelligence artificielle", score=0.95),
-        KeywordApiResponse(term="génération de mots-clés", score=0.87),
-        KeywordApiResponse(term="API", score=0.78)
-    ]
-    response = KeywordsApiResponse(document_name=file.filename, keywords=sample_keywords)
-    return response 
+    sample_keywords = KeywordsApiResponse(
+        success=True,
+        document_name=str(file.filename),
+        keywords=[
+            Keyword(term=Term(isN_gram=True, name="intelligence artificielle", TFscore=0.45, IDFscore=0.5,
+                              TF_IDF_Score=0.95)),
+            Keyword(term=Term(isN_gram=True, name="Python", TFscore=0.5, IDFscore=0.5, TF_IDF_Score=0.87)),
+            Keyword(term=Term(isN_gram=True, name="APIe", TFscore=0.5, IDFscore=0.5, TF_IDF_Score=0.78)),
+        ]
+    )
+
+    response = sample_keywords
+    return response
