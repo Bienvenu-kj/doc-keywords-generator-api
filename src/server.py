@@ -1,8 +1,8 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from Domain.models.response import KeywordsApiResponse
-from Domain.models.keyword import Keyword
-from Domain.models.term import Term
+from .Domain.models.response import KeywordsApiResponse
+from .Domain.models.keyword import Keyword
+from .Domain.models.term import Term
 
 app = FastAPI()
 

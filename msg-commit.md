@@ -1,10 +1,8 @@
-# chore: met en place l'architecture hexagonale
+# fix: corrige l'erreur `ModuleNotFoundError: No module named 'Domain'`
 
+On importait les modules personnalisés avec des imports absolus comme `from Domain...`, alors que l’application est chargée par `fastapi dev` comme un module du package `src`.
 
-Nous avons restructuré le projet pour l'adapté à l'architecture hexagonale.
+Dans ce contexte, `Domain` n’existe pas à la racine du chemin d’import, ce qui provoquait l’erreur `ModuleNotFoundError: No module named 'Domain'`.
 
-Nous savons que nous avons seulement posé les fondations, mais comptons 
-continuer à mettre en place un projet propre, évolutif et maintenable 
-grâce aux bienfaits et avantages de cette architecture.
-
-NB: C'est le premier projet et la première expérience avec cette architecuture
+Cette modification remplace donc les imports absolus par des imports relatifs dans les modules concernés, afin de respecter la structure réelle du 
+package Python et permettre à `fastapi dev ./src/server.py` de démarrer correctement. 

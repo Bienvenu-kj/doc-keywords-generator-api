@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-from Domain.models.keyword import Keyword
+from .keyword import Keyword
 
 
 class KeywordsApiResponse(BaseModel):

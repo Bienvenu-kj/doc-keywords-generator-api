@@ -3,7 +3,7 @@ from typing import Literal, List
 
 from pydantic import BaseModel
 
-from Domain.models.term import Term
+from .term import Term
 
 
 class Document(BaseModel):

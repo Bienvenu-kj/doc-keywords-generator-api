@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from Domain.models.document import Term
+from .term import Term
 
 
 class Keyword(BaseModel):
