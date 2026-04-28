@@ -1,0 +1,1 @@
+Est-ce que la facon dont j'ai crée les fichiers jusqu'ici et la facon dont j'ai utilisé leurs contenu, est-ce que je respecte l'architecture hexagonale ?

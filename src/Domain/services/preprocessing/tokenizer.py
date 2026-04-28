@@ -1,4 +1,4 @@
-from ...ports.tokenizer import Tokenizer
+from Domain.ports.preprocessors.i_tokenizer import Tokenizer
 
 
 class TokenizerService:
@@ -7,5 +7,5 @@ class TokenizerService:
 
     async def tokenize(self, text: str, n_gram: bool) -> list:
         if len(text):
-            return self.tokenizer.tokenize(text, n_gram)
+            return await self.tokenizer.tokenize(text, n_gram)
         return []
