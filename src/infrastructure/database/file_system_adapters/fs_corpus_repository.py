@@ -3,7 +3,7 @@ from pathlib import Path
 from ....Domain.models.document import Document
 from ....Domain.ports.repositories.i_corpus_repository import CorpusRepository
 from ...utils.readers import reader
-from ...utils.to_construct_corpus import get_document_content
+from utils.document_content_preparators.pymupdf_prepare_document_content import pymupdf_get_document_content
 
 
 class FileSystemCorpusRepository(CorpusRepository):
@@ -26,7 +26,7 @@ class FileSystemCorpusRepository(CorpusRepository):
                     name=pdf_document_path.name,
                     path=pdf_document_path.resolve().as_posix(),
                     doc_type=pdf_document_path.suffix.removeprefix("."),
-                    content=get_document_content(pdf_document),
+                    content=pymupdf_get_document_content(pdf_document),
                     all_terms=[],
                     all_unique_terms=[]
                 )

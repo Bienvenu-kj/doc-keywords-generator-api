@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Annotated
 
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 
 from application.dto.keyword_request import KeywordGenerationRequest
@@ -75,5 +76,5 @@ async def get_corpus() -> Corpus:
 
 
 @app.post("/keywords")
-async def keywords_generating(request_date:KeywordGenerationRequest,file: UploadFile) -> KeywordGenerationResponse:
-    return await generate_keywords_use_case.execute(document_name=str(file.filename))
+async def keywords_generating(data:Annotated[KeywordGenerationRequest, Form(media_type="multipart/form-data")]) -> KeywordGenerationResponse:
+    return await generate_keywords_use_case.execute(file=data.file)

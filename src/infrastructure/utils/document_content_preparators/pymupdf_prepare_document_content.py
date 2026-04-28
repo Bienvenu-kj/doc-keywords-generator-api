@@ -1,7 +1,7 @@
 from pymupdf import Document
 
 
-def get_document_content(document: Document | None) -> str:
+def pymupdf_get_document_content(document: Document | None) -> str:
     document_content = ""
     document_links = []
 

@@ -1,3 +1,5 @@
+from fastapi import UploadFile
+
 from ..dto.keyword_response import KeywordGenerationResponse
 from ...Domain.models.keyword import Keyword
 from ...Domain.models.term import Term
@@ -5,10 +7,10 @@ from ...Domain.models.term import Term
 
 class GenerateKeywordsUseCase:
     @staticmethod
-    async def execute(document_name: str) -> KeywordGenerationResponse:
+    async def execute(file: UploadFile) -> KeywordGenerationResponse:
         # En attendant le vrai pipeline TF-IDF, on conserve une réponse de demonstration.
         return KeywordGenerationResponse.from_domain(
-            document_name=document_name,
+            document_name=str(file.file.name),
             keywords=[
                 Keyword(
                     term=Term(

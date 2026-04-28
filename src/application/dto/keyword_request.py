@@ -1,11 +1,12 @@
 # from pathlib import Path
 # from typing import Literal
+from typing import Annotated
 
-from pydantic import BaseModel, PositiveInt
+from fastapi import UploadFile, File
+from pydantic import BaseModel, PositiveInt, Field
 
 
 class KeywordGenerationRequest(BaseModel):
-    # document_name: str
-    # document_type: Literal["txt", "pdf"]
-    # document_path: str | Path
-    keyword_count: PositiveInt
+    keyword_count: PositiveInt = Field()
+    file: Annotated[UploadFile,File()]
+
