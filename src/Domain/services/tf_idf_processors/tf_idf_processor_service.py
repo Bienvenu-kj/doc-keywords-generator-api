@@ -1,10 +1,11 @@
 from Domain.models.term import Term
-from Domain.ports.tf_idf_processors.i_tf_idf_processor import TFIDFProcessor
+
 
 
 class TFIDFProcessorService:
-    def __init__(self, tf_idf_processor:TFIDFProcessor):
-        self.tf_idf_processor = tf_idf_processor
+    def __init__(self, term:Term):
+        self.term = term
 
-    async def process(self, term: Term, idf_score:float, tf_score:float) -> Term:
-        return await self.tf_idf_processor.process(term=term, idf_score=idf_score, tf_core=tf_score)
+    async def process(self) -> Term:
+        tf_idf_score = self.term.TF_score * self.term.IDF_score
+        return Term(is_n_gram=self.term.isN_gram,idf_score=self.term.IDF_score,tf_score=self.term.TF_score,tf_idf_score=tf_idf_score,name=self.term.name)

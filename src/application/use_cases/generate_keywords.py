@@ -4,8 +4,9 @@ from ...Domain.models.term import Term
 
 
 class GenerateKeywordsUseCase:
-    async def execute(self, document_name: str) -> KeywordGenerationResponse:
-        # En attendant le vrai pipeline TF-IDF, on conserve une reponse de demonstration.
+    @staticmethod
+    async def execute(document_name: str) -> KeywordGenerationResponse:
+        # En attendant le vrai pipeline TF-IDF, on conserve une réponse de demonstration.
         return KeywordGenerationResponse.from_domain(
             document_name=document_name,
             keywords=[

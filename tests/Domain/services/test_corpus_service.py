@@ -8,7 +8,7 @@ from Domain.ports.preprocessors.i_tokenizer import Tokenizer
 from src.Domain.models.document import Document
 from src.Domain.ports.repositories.i_corpus_repository import CorpusRepository
 from src.Domain.services.data_accessors.corpus_service import CorpusService
-from src.Domain.services.preprocessing.term_constructor import TermConstructorService
+from src.Domain.services.preprocessors.term_constructor import TermConstructorService
 
 
 class InMemoryCorpusRepository(CorpusRepository):

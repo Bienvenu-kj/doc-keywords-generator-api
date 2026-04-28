@@ -4,12 +4,13 @@ from pathlib import Path
 from fastapi import FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
+from application.dto.keyword_request import KeywordGenerationRequest
 from .application.dto.keyword_response import KeywordGenerationResponse
 from .application.use_cases.build_corpus import BuildCorpusUseCase
 from .application.use_cases.generate_keywords import GenerateKeywordsUseCase
 from .Domain.models.corpus import Corpus
 from .Domain.services.data_accessors.corpus_service import CorpusService
-from .Domain.services.preprocessing.term_constructor import TermConstructorService
+from .Domain.services.preprocessors.term_constructor import TermConstructorService
 from .infrastructure.database.file_system_adapters.fs_corpus_repository import (
     FileSystemCorpusRepository,
 )
@@ -69,10 +70,10 @@ def root():
 async def get_corpus() -> Corpus:
     # Sécurise l'endpoint même si le lifespan n'a pas été déclenché.
     if not (await corpus_service.get_corpus()).documents:
-        await build_corpus_use_case.execute(DEFAULT_ASSETS_PATH)
+        await build_corpus_use_case.execute(DEFAULT_ASSETS_PATH.as_posix())
     return await corpus_service.get_corpus()
 
 
 @app.post("/keywords")
-async def keywords_generating(file: UploadFile) -> KeywordGenerationResponse:
-    return await generate_keywords_use_case.execute(str(file.filename))
+async def keywords_generating(request_date:KeywordGenerationRequest,file: UploadFile) -> KeywordGenerationResponse:
+    return await generate_keywords_use_case.execute(document_name=str(file.filename))

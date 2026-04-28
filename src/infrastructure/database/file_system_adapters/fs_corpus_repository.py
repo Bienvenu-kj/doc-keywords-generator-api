@@ -27,6 +27,7 @@ class FileSystemCorpusRepository(CorpusRepository):
                     path=pdf_document_path.resolve().as_posix(),
                     doc_type=pdf_document_path.suffix.removeprefix("."),
                     content=get_document_content(pdf_document),
+                    all_terms=[],
                     all_unique_terms=[]
                 )
             )

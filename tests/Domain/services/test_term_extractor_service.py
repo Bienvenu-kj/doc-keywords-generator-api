@@ -1,6 +1,6 @@
 import pytest
 
-from src.Domain.services.preprocessing.term_constructor import TermConstructorService
+from src.Domain.services.preprocessors.term_constructor import TermConstructorService
 
 
 @pytest.mark.asyncio

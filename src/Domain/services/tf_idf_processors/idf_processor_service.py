@@ -1,11 +1,26 @@
-from Domain.models.corpus import Corpus
+from math import log
+
 from Domain.models.term import Term
-from Domain.ports.tf_idf_processors.i_idf_processor import IDFProcessor
+from Domain.models.corpus import Corpus
+
+
 
 
 class IDFProcessorService:
-    def __init__(self, idf_processor:IDFProcessor):
-        self.idf_processor = idf_processor
+    def __init__(self,corpus:Corpus, term:Term):
+        self.corpus = corpus
+        self.term = term
 
-    async def idf_processing(self, corpus: Corpus, term_name:str) -> Term:
-        return await self.idf_processor.process(corpus=corpus, term_name=term_name)
+
+
+    async def idf_processing(self) -> Term:
+        documents_count = len(self.corpus.documents)
+        documents_where_term_appear_count = 0
+
+        for document in self.corpus.documents:
+            if self.term in document.all_unique_terms:
+                documents_where_term_appear_count += 1
+
+        idf_score = float(log(documents_count / documents_where_term_appear_count))
+
+        return Term(tf_idf_score=self.term.TF_IDF_Score,name=self.term.name,is_n_gram=self.term.isN_gram, tf_score=self.term.TF_score, idf_score=idf_score)
