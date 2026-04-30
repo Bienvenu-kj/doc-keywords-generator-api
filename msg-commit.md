@@ -1,31 +1,33 @@
-# feat : met enfin opérationnelle la génération de mots-clés
+# fix : corrige le mauvais calcul de l'IDF score
 
-Enfin, la génération de mots-clés est opérationnelle et nous avons fait nos prémières générations
 
-Dans ces changements :
-## 1. Ajouts(*nouveautés*) : 
-- **Les préprocesseurs natifs (`infrastructure.preprocessors_adapters`)**: Natifs pour signifier que nous avons uniquement utilisé du 
-                                                    python pur. ce sont des adapters.
-- **Un service pour la génération des mots clés (`domaine.services`)** : Nous avons ajouté un nouveau service pour faire la génération 
-                                                    complète des mots clés en faisant en son sein les calculs du tf,
-                                                    idf et tf_idf de chaque mot et retourne une liste de mot-clé 
-                                                    dont le nombre peut aller jusqu'au nombre de mots-clés qu'a 
-                                                    demandées le client.
+## constat du problème
+Parmi le problème que nous avons constaté dans les changements precedents, figure le problème 
+du calcul incorrect de l'IDF, ce n'est pas directement un calcul incorrect, mais une verification,
+qu'un term est bien dans les terms du document encours, qui échouait dans tous les cas, et 
+ce qui faisait que le nombre de documents dans lesquels le term est trouvé était toujours 1, 
+conduisant ainsi à un score IDF similaire pour tous les terms du document.
+
 ---
-## 2. Changements (Réajustement) :
-- **Retour à l'utilisation complète de Pydantic** : Nous avons dans les changements précédents, abandonées `Pydantic` pour les objets
-                                                    metiers, mais après avoir vu que l'api repose sur lui pour valider les requettes, 
-                                                    nous avons repris son utilisation pour representer les objets metiers, mais nous 
-                                                    allons voir comment limiter son utilisation hors du domaine.
+## Le pourquoi (cause)
+Mais pourquoi la verification renvoyait toujours `False` ? Eh bien, c'est parce que quand nous 
+voulons calculer le IDF, nous devons avoir la valeur représentant `le nombre des documents` dans 
+lesquels apparait le term. Mais pour trouver cette valeur, il nous fait tester l'appartenance du term 
+à la liste des terms uniques du document encours, alors que le term vient déjà avec une valeur TF déjà 
+défini à une valeur differente de 0 au moment où les termes de chaque document du corpus ont leur 
+valeur TF à zéro, alors quand l'opérateur `in` régarde si un term du document a la même structure 
+et les mêmes valeurs que le terme en cours, ne trouve rien.
 
-- **Et d'autres détails pour faire fonctionner le code actuels** : Il y a bien sûr d'autres changements dont nous n'avons pas parlé 
-                                                                   directement ici, mais qui ont été fait pour juste faire en sorte que 
-                                                                   le code actuel puisse fonctionner sans problème. 
 ---
-## NB : 
-Mais nous avons déjà constaté le manque de precision et de justesse de nos preprocesseurs natifs, ils conduisent encore à des resultats indesirables.
-Le premier teste sur un document, a presenté `/` comme étant le mot important du document, suivi du mot `command`, c'était un document qui montre 
-les raccourcis de `Davinci resolve`, je ne sais pas si l'on peut faire de prédictions sur ces resultats là, vraiment, je n'ai pas encore de réponses pour le moment.
+## Solution
+Alors voilà pourqoui, nous avons trouvé une solution qui consistait à déclarer une variable qui va 
+stocker la copie du term, puis on modifie le TF de cette copie et on met ça à 0, puis on teste 
+l'appartenance avec ce copi, et directement l'opérateur `in` trouve bien un term qui a non 
+seulement la même structure, mais surtout les mêmes valeurs : nom, is_n_gram, tf_score…, et incremente 
+la valeur là dont on a parlé, et là, la valeur IDF est bien exact.
 
-Mais, nous passons que la cause de ce manque de precision et de justesse est causé, d'une part, par le fait que le corpus est encore petit et non varié, de l'autre côté, 
-nos préprocesseurs actuels ne sont pas sophistiqués pour bien préparer non seulement le corpus, mais aussi le document sur lequel on tire les mots-clés. 
+---
+## Resultat : 
+
+Avec ça, on arrive bien à balayer les mots sans importance, les stopwords sont tous ignorés 
+et on garde uniquement les terms qui ont de l'importance par rapport au document.
