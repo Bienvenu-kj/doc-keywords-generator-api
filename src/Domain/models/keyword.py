@@ -1,9 +1,10 @@
+from pydantic import BaseModel
 
 from .term import Term
 
 
-class Keyword:
-    def __init__(self, term: Term):
-        self.term = term
+class Keyword(BaseModel):
+    term: Term
+
 
 

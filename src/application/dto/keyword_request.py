@@ -7,6 +7,6 @@ from pydantic import BaseModel, PositiveInt, Field
 
 
 class KeywordGenerationRequest(BaseModel):
-    keyword_count: PositiveInt = Field()
+    max_keywords_count: PositiveInt = Field()
     file: Annotated[UploadFile,File()]
 

@@ -1,13 +1,13 @@
-from typing import Literal
+from typing import Literal, Any
 
 from colorama import Fore, Style, init
 
 init(autoreset=True)
 
-def print_c(status:Literal["error","success","normal"], message:str):
+def print_c(status:Literal["error","success","normal"], message:Any):
     if status == "error":
-        print(Fore.RED + message)
+        print(Fore.RED + str(message))
     elif status == "success":
-        print(Fore.GREEN + message)
+        print(Fore.GREEN + str(message))
     elif status == "normal":
-        print(message)
+        print(str(message))

@@ -7,6 +7,10 @@ from pymupdf import Document
 
 from ..custom_print import print_c
 
+
+
+
+
 class PymupdfReader:
     def __init__(self, document_path: Path|str|None=None , document_type: Literal['pdf','txt']='pdf', is_a:Literal['image','document']='document', uploaded_document: UploadFile = None):
         self.document_path = document_path
@@ -27,8 +31,9 @@ class PymupdfReader:
     @staticmethod
     async def read_doc_from_fs(document_path: Path|str, doc_type:Literal["pdf","txt"]) -> Document|None:
         try:
-            with pymupdf.open(document_path,filetype=doc_type) as doc:
-                return doc
+            # with pymupdf.open(document_path,filetype=doc_type) as doc:
+            doc= pymupdf.open(document_path,filetype=doc_type)
+            return doc
         except Exception as e:
             print_c(status="error", message=str(e))
             return None
@@ -38,10 +43,15 @@ class PymupdfReader:
     async def read_uploaded_file(uploaded_document: UploadFile, doc_type:str) -> Document|None:
         try:
             doc_content = await uploaded_document.read()
-            with pymupdf.open(stream=doc_content,filetype=doc_type) as doc:
-                return doc
+            print_c("success",f"type du document {uploaded_document.content_type}")
+
+            # with pymupdf.open(stream=doc_content,filetype=doc_type) as doc:
+            doc = pymupdf.open(stream=doc_content,filetype=doc_type)
+            return doc
         except Exception as e:
             print_c(status="error", message=str(e))
             return None
+
+
 
 

@@ -1,4 +1,4 @@
-from Domain.ports.preprocessors.i_cleaner import Cleaner
+from ...ports.preprocessors.i_cleaner import Cleaner
 
 
 class CleanerService:

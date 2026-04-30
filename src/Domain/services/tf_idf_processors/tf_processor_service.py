@@ -1,5 +1,5 @@
-from Domain.models.document import Document
-from Domain.models.term import Term
+from ....Domain.models.document import Document
+from ....Domain.models.term import Term
 
 
 
@@ -18,4 +18,4 @@ class TFProcessorService:
                 term_appearing_count += 1
 
         tf_score = float(term_appearing_count) / float(document_terms_count)
-        return Term(name=term_name, tf_score=tf_score, tf_idf_score=self.term.TF_IDF_Score,idf_score=self.term.IDF_score,is_n_gram=self.term.isN_gram)
+        return Term(name=term_name, tf_score=tf_score, tf_idf_score=self.term.tf_idf_score,idf_score=self.term.idf_score,is_n_gram=self.term.is_n_gram)

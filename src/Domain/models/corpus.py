@@ -1,9 +1,12 @@
 
 from typing import List
+
+from pydantic import BaseModel
+
 from .document import Document
 
 
-class Corpus:
-    def __init__(self, documents: List[Document]):
-        self.documents= documents
+class Corpus(BaseModel):
+    documents: List[Document]
+
 

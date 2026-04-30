@@ -1,4 +1,4 @@
-from Domain.ports.preprocessors.i_tokenizer import Tokenizer
+from ...ports.preprocessors.i_tokenizer import Tokenizer
 
 
 class TokenizerService:

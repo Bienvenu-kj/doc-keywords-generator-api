@@ -1,8 +1,8 @@
+from ..preprocessors.cleaner import CleanerService
+from ..preprocessors.normalizer import NormalizerService
+from ..preprocessors.tokenizer import TokenizerService
 from ...models.corpus import Corpus
 from ...models.document import Document
-from ...ports.preprocessors.i_cleaner import Cleaner
-from ...ports.preprocessors.i_normalizer import Normalizer
-from ...ports.preprocessors.i_tokenizer import Tokenizer
 from ...ports.repositories.i_corpus_repository import CorpusRepository
 from ..preprocessors.term_constructor import TermConstructorService
 
@@ -11,9 +11,9 @@ class CorpusService:
     def __init__(
         self,
         corpus_repository: CorpusRepository,
-        cleaner: Cleaner,
-        normalizer: Normalizer,
-        tokenizer: Tokenizer,
+        cleaner: CleanerService,
+        normalizer: NormalizerService,
+        tokenizer: TokenizerService,
         term_constructor: TermConstructorService,
     ):
         self.corpus_repository = corpus_repository
@@ -47,6 +47,9 @@ class CorpusService:
 
             # on ajoute tous les terms obtenus
             document.__setitem__("all_terms",all_terms)
+
+            # on supprime tout le contenu, car il ne sert plus à rien dans le corpus, nous avons tous les terms qui forment le contenu
+            document.__setitem__("content","")
 
             # on ajoute tous les terms enrichis obtenus
             enriched_document = document.__setitem__("all_unique_terms",all_unique_terms)
