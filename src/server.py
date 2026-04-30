@@ -97,5 +97,6 @@ async def get_corpus() -> CorpusResponse:
 @app.post("/keywords")
 async def keywords_generating(data:Annotated[KeywordGenerationRequest, Form(media_type="multipart/form-data")]) -> KeywordGenerationResponse:
     global corpus_service,corpus, DEFAULT_ASSETS_PATH
+    print_c("success", "La requette pour générer les mots-clés est bien reçue")
     corpus = (await corpus_service.construct_corpus(DEFAULT_ASSETS_PATH.as_posix())) if corpus is None else corpus
     return await generate_keywords_use_case.execute(data=data,corpus=corpus)

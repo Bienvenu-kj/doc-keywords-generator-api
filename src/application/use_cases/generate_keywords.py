@@ -25,25 +25,30 @@ class GenerateKeywordsUseCase:
         if corpus is None:
             print_c("error","Le corpus est vide")
 
-        print_c("success","La requette reçue: On commence la génération des keywords...")
+        print_c("warning","on commence la génération des keywords...")
 
         # contenu brut du document
         document_content = await pymupdf_get_document_content(await PymupdfReader(uploaded_document=data.file).read())
+        print_c("success", "Nous avons déjà le contenu brut du document à traiter")
 
         """
         Prétraitement du document
         """
         # normalisation
         normalized_content = await NormalizerService(normalizer=InMemoryNativeNormalizer()).normalize(document_content)
+        print_c("success","Nous venons de normaliser son contenu")
 
         # nettoyage
         cleaned_content = await CleanerService(cleaner=InMemoryNativeCleaner()).clean(normalized_content)
+        print_c("success","Nous venons de le nettoyer")
 
         # tokenisation
         tokens = await TokenizerService(tokenizer=InMemoryNativeTokenizer()).tokenize(cleaned_content,n_gram=False)
+        print_c("success","Nous venons de générer les tokens")
 
         # construction de terms avec 0 comme valeur aux propriétés tf, idf et tf_idf
         terms = await TermConstructorService().construct_terms(tokens)
+        print_c("success", "Nous avons maintenant les termes")
 
         document = Document(
             name=str(data.file.filename),
@@ -54,41 +59,14 @@ class GenerateKeywordsUseCase:
             doc_type=str(data.file.filename.split(".")[1]),
         )
 
+        print_c("warning","génération proprément-dite des mot-clés...")
         keywords = await KeywordsGeneratorService(corpus=corpus, max_keywords_count=data.max_keywords_count, document=document).generate_keywords()
 
-        print_c("success","génération terminée : Félicitation !")
-        # En attendant le vrai pipeline TF-IDF, on conserve une réponse de demonstration.
+        print_c("success","génération des mots-clés terminée : Félicitation !")
+
+        # retourne les mots-clés générés
         return KeywordGenerationResponse(
             document_name=str(data.file.filename),
             success=True,
              keywords=keywords
-             # [
-            #     Keyword(
-            #         term=Term(
-            #             name="intelligence artificielle",
-            #             is_n_gram=True,
-            #             tf_score=0.45,
-            #             idf_score=0.5,
-            #             tf_idf_score=0.95,
-            #         )
-            #     ),
-            #     Keyword(
-            #         term=Term(
-            #             name="Python",
-            #             is_n_gram=True,
-            #             tf_score=0.5,
-            #             idf_score=0.5,
-            #             tf_idf_score=0.87,
-            #         )
-            #     ),
-            #     Keyword(
-            #         term=Term(
-            #             name="APIe",
-            #             is_n_gram=True,
-            #             tf_score=0.5,
-            #             idf_score=0.5,
-            #             tf_idf_score=0.78,
-            #         )
-            #     ),
-            # ]
         )

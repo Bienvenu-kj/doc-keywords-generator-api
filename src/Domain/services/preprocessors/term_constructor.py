@@ -1,6 +1,3 @@
-import re
-from encodings import search_function
-
 from ...models.term import Term
 
 

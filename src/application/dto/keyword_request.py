@@ -1,5 +1,3 @@
-# from pathlib import Path
-# from typing import Literal
 from typing import Annotated
 
 from fastapi import UploadFile, File
