@@ -53,6 +53,7 @@ async def test_construct_corpus_extracts_unique_terms_from_loaded_documents():
                 doc_type="pdf",
                 content="Python python API 101\nAPI",
                 all_unique_terms=[],
+                all_terms=[]
             )
         ]
     )

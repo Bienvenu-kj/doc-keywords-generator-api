@@ -1,20 +1,24 @@
-from ..preprocessors.cleaner import CleanerService
-from ..preprocessors.normalizer import NormalizerService
-from ..preprocessors.tokenizer import TokenizerService
-from ...models.corpus import Corpus
 from ...models.document import Document
+from ...models.corpus import Corpus
+from ...ports.custom_print import CustomPrint
+from ...ports.preprocessors.i_cleaner import Cleaner
+from ...ports.preprocessors.i_normalizer import Normalizer
+from ...ports.preprocessors.i_tokenizer import Tokenizer
 from ...ports.repositories.i_corpus_repository import CorpusRepository
+from ..preprocessors.preprocessor_service import PreprocessorService
 from ..preprocessors.term_constructor import TermConstructorService
+
 
 
 class CorpusService:
     def __init__(
         self,
         corpus_repository: CorpusRepository,
-        cleaner: CleanerService,
-        normalizer: NormalizerService,
-        tokenizer: TokenizerService,
+        cleaner: Cleaner,
+        normalizer: Normalizer,
+        tokenizer: Tokenizer,
         term_constructor: TermConstructorService,
+        custom_printer: CustomPrint
     ):
         self.corpus_repository = corpus_repository
         self.term_constructor = term_constructor
@@ -22,6 +26,7 @@ class CorpusService:
         self.cleaner = cleaner
         self.normalizer = normalizer
         self.tokenizer = tokenizer
+        self.printer = custom_printer
 
     async def get_corpus(self) -> Corpus:
         return self.corpus
@@ -33,17 +38,14 @@ class CorpusService:
         for document in documents:
             document_content = document.content
 
-            # on normalise le contenu du document
-            normalized_content = await self.normalizer.normalize(document_content)
+            """
+                Prétraitement du document
+            """
+            processing_result = await PreprocessorService(tokenizer=self.tokenizer,normalizer=self.normalizer,cleaner=self.cleaner,printer=self.printer).preprocess(document_content=document_content)
 
-            # nous nettoyons le contenu
-            cleaned_content = await self.cleaner.clean(normalized_content)
 
-            # on tokenise pour obtenir tous les terms, mais en version simple(str) unique ou n_gram.
-            all_terms = await self.tokenizer.tokenize(cleaned_content,False)
-
-            # on obtient les terms uniques du document, mais cette fois en version enrichie (Term).
-            all_unique_terms = await self.term_constructor.construct_terms(all_terms)
+            all_terms = processing_result.all_terms
+            all_unique_terms =processing_result.all_unique_terms
 
             # on ajoute tous les terms obtenus
             document.__setitem__("all_terms",all_terms)

@@ -1,9 +1,10 @@
 from pathlib import Path
 
+from ....Domain.ports.document_content_extractor import DocumentSource
 from ....Domain.models.document import Document
 from ....Domain.ports.repositories.i_corpus_repository import CorpusRepository
-from ....infrastructure.utils.document_content_preparators.pymupdf_prepare_document_content import pymupdf_get_document_content
-from ....infrastructure.utils.readers.pymupdf_readers import PymupdfReader
+from ....infrastructure.utils.document_content_preparators.pymupdf_prepare_document_content import InMemoryPymuPDFDocumentContentExtractor
+
 
 class FileSystemCorpusRepository(CorpusRepository):
     async def load_documents(self, documents_path: str) -> list[Document]:
@@ -14,18 +15,21 @@ class FileSystemCorpusRepository(CorpusRepository):
 
         all_documents: list[Document] = []
 
-        for pdf_document_path in _documents_path.rglob("*.pdf"):
-            pdf_document = await PymupdfReader(pdf_document_path).read()
-            if pdf_document is None:
+        for document_path in _documents_path.rglob("*.pdf"):
+            document_bytes_content = document_path.read_bytes()
+            document_source_data = DocumentSource(content=document_bytes_content, name=document_path.name,document_type=document_path.suffix.removeprefix("."))
+
+            document_content = await InMemoryPymuPDFDocumentContentExtractor().extract(document_source_data)
+            if document_content is None or document_content == '':
                 # Le PDF est illisible, on le saute pour continuer la construction.
                 continue
 
             all_documents.append(
                 Document(
-                    name=pdf_document_path.name,
-                    path=pdf_document_path.resolve().as_posix(),
-                    doc_type=pdf_document_path.suffix.removeprefix("."),
-                    content=(await pymupdf_get_document_content(pdf_document)),
+                    name=document_path.name,
+                    path=document_path.resolve().as_posix(),
+                    doc_type=document_path.suffix.removeprefix("."),
+                    content=document_content,
                     all_terms=[],
                     all_unique_terms=[]
                 )

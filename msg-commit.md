@@ -1,33 +1,35 @@
-# fix : corrige le mauvais calcul de l'IDF score
+# refactor: renforce les ports du domaine et unifie l'extraction/prétraitement des documents
 
+## Constat
+Les changements récents avaient amélioré le calcul de l'IDF, mais le flux global de lecture et de
+prétraitement des documents restait encore fragile sur plusieurs points :
 
-## constat du problème
-Parmi le problème que nous avons constaté dans les changements precedents, figure le problème 
-du calcul incorrect de l'IDF, ce n'est pas directement un calcul incorrect, mais une verification,
-qu'un term est bien dans les terms du document encours, qui échouait dans tous les cas, et 
-ce qui faisait que le nombre de documents dans lesquels le term est trouvé était toujours 1, 
-conduisant ainsi à un score IDF similaire pour tous les terms du document.
+- le domaine recréait encore certaines implémentations concrètes au lieu de s'appuyer uniquement sur des ports ;
+- le contrat d'extraction du contenu mentait sur sa vraie source de données en mélangeant chemin de fichier,
+  état interne et upload HTTP ;
+- le système de logs dépendait d'un utilitaire d'infrastructure directement utilisé dans le domaine ;
+- le pipeline de prétraitement était dupliqué entre la construction du corpus et la génération de mots-clés.
 
----
-## Le pourquoi (cause)
-Mais pourquoi la verification renvoyait toujours `False` ? Eh bien, c'est parce que quand nous 
-voulons calculer le IDF, nous devons avoir la valeur représentant `le nombre des documents` dans 
-lesquels apparait le term. Mais pour trouver cette valeur, il nous fait tester l'appartenance du term 
-à la liste des terms uniques du document encours, alors que le term vient déjà avec une valeur TF déjà 
-défini à une valeur differente de 0 au moment où les termes de chaque document du corpus ont leur 
-valeur TF à zéro, alors quand l'opérateur `in` régarde si un term du document a la même structure 
-et les mêmes valeurs que le terme en cours, ne trouve rien.
+## Objectif
+Recentrer le domaine sur des contrats explicites et neutres, puis déplacer les détails techniques
+vers la couche d'infrastructure ou de composition.
 
----
-## Solution
-Alors voilà pourqoui, nous avons trouvé une solution qui consistait à déclarer une variable qui va 
-stocker la copie du term, puis on modifie le TF de cette copie et on met ça à 0, puis on teste 
-l'appartenance avec ce copi, et directement l'opérateur `in` trouve bien un term qui a non 
-seulement la même structure, mais surtout les mêmes valeurs : nom, is_n_gram, tf_score…, et incremente 
-la valeur là dont on a parlé, et là, la valeur IDF est bien exact.
+## Changements
+- introduction d'un objet `DocumentSource` pour représenter une source de document de manière neutre ;
+- renforcement du port `DocumentContentExtractor` et ajout d'un service dédié côté domaine ;
+- refactor de l'extracteur PyMuPDF pour travailler à partir de `DocumentSource` ;
+- centralisation du pipeline de prétraitement dans `PreprocessorService` ;
+- injection des dépendances de prétraitement et d'extraction au lieu d'instancier les implémentations au milieu du flux ;
+- introduction du port `CustomPrint` et d'un utilitaire de log piloté par contrat ;
+- adaptation du `GenerateKeywordsUseCase`, du `CorpusService`, du repository fichier et du `server`
+  pour composer correctement les dépendances ;
+- correction du calcul/contrat IDF déjà amorcée, en cohérence avec le nouveau flux ;
+- ajout du modèle `PreprocessingResult` pour transporter proprement les résultats intermédiaires.
 
----
-## Resultat : 
+## Résultat
+Avec ce refactor :
 
-Avec ça, on arrive bien à balayer les mots sans importance, les stopwords sont tous ignorés 
-et on garde uniquement les terms qui ont de l'importance par rapport au document.
+- le domaine dépend mieux de ports que d'implémentations concrètes ;
+- l'extraction du contenu ne dépend plus de `UploadFile` ni d'un chemin brut dans son contrat métier ;
+- la préparation des documents est réutilisable entre corpus et génération de keywords ;
+- le câblage de l'application est plus lisible et plus conforme à l'architecture hexagonale visée.

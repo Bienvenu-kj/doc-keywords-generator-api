@@ -7,7 +7,6 @@ from .term import Term
 
 
 class Document(BaseModel):
-
     name:str
     path:str
     doc_type:str
